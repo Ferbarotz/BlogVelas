@@ -17,7 +17,6 @@ export function Header() {
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/ignis-logo.png" alt="Ignis" width={36} height={36} className="rounded-sm" />
-          <span className="font-display font-bold text-lg text-foreground tracking-tight">Ignis</span>
         </Link>
         <div className="flex items-center gap-3">
           {isAdmin && (
