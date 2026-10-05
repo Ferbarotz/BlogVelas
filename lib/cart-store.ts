@@ -22,7 +22,7 @@ interface CartState {
 function loadCart(): CartItem[] {
   if (typeof window === 'undefined') return [];
   try {
-    const stored = localStorage.getItem('blogvelas-cart');
+    const stored = localStorage.getItem('ignis-cart');
     return stored ? JSON.parse(stored) : [];
   } catch {
     return [];
@@ -32,7 +32,7 @@ function loadCart(): CartItem[] {
 function saveCart(items: CartItem[]) {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem('blogvelas-cart', JSON.stringify(items));
+    localStorage.setItem('ignis-cart', JSON.stringify(items));
   } catch {}
 }
 

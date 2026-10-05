@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { ShoppingCart, Flame, User, LogIn, LogOut } from 'lucide-react';
+import Image from 'next/image';
+import { ShoppingCart, User, LogIn, LogOut } from 'lucide-react';
 import { useCartStore } from '@/lib/cart-store';
 import { useSession, signOut } from 'next-auth/react';
 import { ClientOnly } from '@/components/client-only';
@@ -15,8 +16,8 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-white border-b border-border">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Flame className="w-6 h-6 text-foreground" />
-          <span className="font-display font-bold text-lg text-foreground tracking-tight">BlogVelas</span>
+          <Image src="/ignis-logo.png" alt="Ignis" width={36} height={36} className="rounded-sm" />
+          <span className="font-display font-bold text-lg text-foreground tracking-tight">Ignis</span>
         </Link>
         <div className="flex items-center gap-3">
           {isAdmin && (
