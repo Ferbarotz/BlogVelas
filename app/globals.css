@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 20 80% 97%;
+    --foreground: 262 22% 22%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 262 22% 22%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 262 22% 22%;
+
+    --primary: 343 45% 56%;
+    --primary-foreground: 20 80% 98%;
+
+    --secondary: 18 72% 90%;
+    --secondary-foreground: 343 40% 32%;
+
+    --muted: 20 45% 93%;
+    --muted-foreground: 272 12% 45%;
+
+    --accent: 350 80% 91%;
+    --accent-foreground: 343 45% 32%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 20 40% 88%;
+    --input: 20 40% 88%;
+    --ring: 343 45% 56%;
+
+    --radius: 0.5rem;
+    --radius-sm: 0.25rem;
+    --radius-lg: 0.75rem;
+    --radius-full: 9999px;
+
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    --spacing-3xl: 64px;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+    --shadow-md: 0 2px 4px 0 rgb(0 0 0 / 0.04);
+    --shadow-lg: 0 4px 8px 0 rgb(0 0 0 / 0.06);
+
+    --duration-fast: 150ms;
+    --duration-normal: 250ms;
+    --duration-slow: 350ms;
+  }
+
+  .dark {
+    --background: 262 20% 10%;
+    --foreground: 20 40% 92%;
+    --card: 262 18% 14%;
+    --card-foreground: 20 40% 92%;
+    --popover: 262 18% 14%;
+    --popover-foreground: 20 40% 92%;
+    --primary: 343 55% 62%;
+    --primary-foreground: 262 20% 10%;
+    --secondary: 262 15% 20%;
+    --secondary-foreground: 20 40% 92%;
+    --muted: 262 15% 20%;
+    --muted-foreground: 20 20% 68%;
+    --accent: 272 18% 26%;
+    --accent-foreground: 20 40% 92%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 262 15% 24%;
+    --input: 262 15% 24%;
+    --ring: 343 55% 62%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply text-foreground;
+    background: linear-gradient(170deg, hsl(17 87% 90%) 0%, hsl(350 78% 91%) 40%, hsl(272 30% 90%) 75%, hsl(208 40% 88%) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  .dark body {
+    background: linear-gradient(170deg, hsl(208 35% 12%) 0%, hsl(262 25% 10%) 45%, hsl(343 25% 12%) 100%);
+    background-attachment: fixed;
+  }
+}

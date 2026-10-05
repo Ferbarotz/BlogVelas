@@ -1,0 +1,66 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+    output = "/home/ubuntu/blogvelas/nextjs_space/node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Candle {
+  id               String      @id @default(cuid())
+  name             String
+  description      String
+  price            Float
+  category         String
+  imageUrl         String?
+  cloudStoragePath String?
+  isPublic         Boolean     @default(true)
+  active           Boolean     @default(true)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  orderItems       OrderItem[]
+
+  @@index([category])
+  @@index([active])
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  orderNumber  Int         @unique @default(autoincrement())
+  customerName String
+  phone        String
+  address      String
+  notes        String?
+  status       String      @default("pendiente")
+  total        Float
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id       String @id @default(cuid())
+  quantity Int
+  price    Float
+  candleName String @default("")
+  orderId  String
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  candleId String
+  candle   Candle @relation(fields: [candleId], references: [id])
+
+  @@index([orderId])
+  @@index([candleId])
+}

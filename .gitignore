@@ -1,0 +1,26 @@
+# dependencies
+node_modules
+.yarn/install-state.gz
+.pnp
+.pnp.js
+
+# builds
+.next
+.build
+out
+build
+*.tsbuildinfo
+
+# env (credenciales)
+.env
+.env*.local
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# misc
+.DS_Store
+.vercel
