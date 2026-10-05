@@ -1,14 +1,15 @@
 'use client';
 import Link from 'next/link';
-import { ShoppingCart, Flame, User } from 'lucide-react';
+import { ShoppingCart, Flame, User, LogIn, LogOut } from 'lucide-react';
 import { useCartStore } from '@/lib/cart-store';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { ClientOnly } from '@/components/client-only';
 
 export function Header() {
   const count = useCartStore((s) => s.getCount());
-  const { data: session } = useSession();
+  const { data: session, status } = useSession() || {};
   const isAdmin = session?.user?.role === 'admin';
+  const isAuthed = status === 'authenticated';
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-border">
@@ -40,6 +41,25 @@ export function Header() {
               )}
             </ClientOnly>
           </Link>
+          <ClientOnly>
+            {isAuthed ? (
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="flex items-center gap-1 text-sm text-gray-600 hover:text-foreground transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Salir</span>
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center gap-1 text-sm font-medium bg-primary text-white px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Entrar</span>
+              </Link>
+            )}
+          </ClientOnly>
         </div>
       </div>
     </header>
