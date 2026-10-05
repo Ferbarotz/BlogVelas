@@ -16,7 +16,7 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-white border-b border-border">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/ignis-logo.png" alt="Ignis" width={36} height={36} className="rounded-sm" />
+          <Image src="/ignis-logo.png" alt="Ignis" width={120} height={40} className="rounded-sm" style={{ objectFit: 'contain' }} />
         </Link>
         <div className="flex items-center gap-3">
           {isAdmin && (
