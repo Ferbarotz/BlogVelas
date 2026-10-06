@@ -14,14 +14,14 @@ const jakartaSans = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-di
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
-  title: 'Ignis - Velas Artesanales',
+  title: 'Adely Creaciones - Pequeños detalles, grandes emociones',
   description: 'Descubre nuestra colección de velas artesanales: aromáticas, decorativas y naturales.',
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
   },
   openGraph: {
-    title: 'Ignis - Velas Artesanales',
+    title: 'Adely Creaciones - Pequeños detalles, grandes emociones',
     description: 'Descubre nuestra colección de velas artesanales.',
     images: [{ url: '/og-image.png' }],
   },

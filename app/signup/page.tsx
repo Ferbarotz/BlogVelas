@@ -51,7 +51,7 @@ export default function SignupPage() {
         <div className="text-center mb-8">
           <Flame className="w-10 h-10 text-foreground mx-auto mb-3" />
           <h1 className="font-display text-xl font-bold text-foreground tracking-tight">Crear Cuenta</h1>
-          <p className="text-sm text-gray-500 mt-1">Regístrate en Ignis</p>
+          <p className="text-sm text-gray-500 mt-1">Regístrate en Adely</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
