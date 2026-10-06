@@ -2,8 +2,9 @@
 import { useCartStore, CartItem } from '@/lib/cart-store';
 import { ArrowLeft, Package, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { ClientOnly } from '@/components/client-only';
 
@@ -12,13 +13,49 @@ function OrderForm() {
   const getTotal = useCartStore((s) => s.getTotal);
   const clearCart = useCartStore((s) => s.clearCart);
   const router = useRouter();
+  const { data: session, status } = useSession() || {};
   const [loading, setLoading] = useState(false);
+  const [prefilling, setPrefilling] = useState(false);
   const [form, setForm] = useState({
     customerName: '',
     phone: '',
     address: '',
     notes: '',
   });
+
+  // Precargar datos del cliente autenticado (nombre de la cuenta y, si existe,
+  // el teléfono/dirección de su último pedido) para no pedirlos de nuevo.
+  useEffect(() => {
+    if (status !== 'authenticated') return;
+    let cancelled = false;
+    setPrefilling(true);
+    (async () => {
+      try {
+        const res = await fetch('/api/orders/mine');
+        const orders = res.ok ? await res.json() : [];
+        const last = Array.isArray(orders) && orders.length > 0 ? orders[0] : null;
+        if (cancelled) return;
+        setForm((prev) => ({
+          ...prev,
+          customerName: prev.customerName || last?.customerName || session?.user?.name || '',
+          phone: prev.phone || last?.phone || '',
+          address: prev.address || last?.address || '',
+        }));
+      } catch {
+        if (!cancelled) {
+          setForm((prev) => ({
+            ...prev,
+            customerName: prev.customerName || session?.user?.name || '',
+          }));
+        }
+      } finally {
+        if (!cancelled) setPrefilling(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [status, session?.user?.name]);
 
   const total = getTotal();
 
@@ -68,6 +105,14 @@ function OrderForm() {
         <p className="text-xs text-gray-500 mb-2">{items?.length ?? 0} producto(s)</p>
         <p className="font-bold text-lg text-foreground">Total: ${total?.toFixed?.(2) ?? '0.00'}</p>
       </div>
+
+      {prefilling ? (
+        <p className="flex items-center gap-2 text-xs text-gray-500">
+          <Loader2 className="w-3.5 h-3.5 animate-spin" /> Cargando tus datos...
+        </p>
+      ) : status === 'authenticated' ? (
+        <p className="text-xs text-primary">Rellenamos tus datos automáticamente. Puedes editarlos si lo necesitas.</p>
+      ) : null}
 
       <div>
         <label className="block text-sm font-medium text-foreground mb-1">Nombre completo *</label>
