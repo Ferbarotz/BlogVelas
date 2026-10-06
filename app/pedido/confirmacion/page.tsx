@@ -1,5 +1,5 @@
 'use client';
-import { CheckCircle, ArrowLeft } from 'lucide-react';
+import { CheckCircle, ArrowLeft, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
@@ -23,12 +23,20 @@ function ConfirmacionContent() {
       <p className="text-sm text-gray-500 mb-6">
         Hemos recibido tu pedido. Te contactaremos pronto para coordinar la entrega.
       </p>
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
-      >
-        <ArrowLeft className="w-4 h-4" /> Volver al catálogo
-      </Link>
+      <div className="flex flex-col items-center gap-3">
+        <Link
+          href="/mis-pedidos"
+          className="inline-flex items-center justify-center gap-1.5 bg-primary text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-primary/90 transition-colors"
+        >
+          <ShoppingBag className="w-4 h-4" /> Ver mis pedidos
+        </Link>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
+        >
+          <ArrowLeft className="w-4 h-4" /> Volver al catálogo
+        </Link>
+      </div>
     </div>
   );
 }

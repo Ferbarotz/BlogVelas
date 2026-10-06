@@ -26,6 +26,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
     const body = await req.json();
     if (!body.customerName || !body.phone || !body.address || !body.items?.length) {
       return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
@@ -37,6 +38,7 @@ export async function POST(req: Request) {
         phone: body.phone,
         address: body.address,
         notes: body.notes ?? '',
+        userId: session?.user?.id ?? null,
         total: parseFloat(body.total) || 0,
         items: {
           create: (body.items ?? []).map((item: any) => ({
