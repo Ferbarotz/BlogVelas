@@ -17,7 +17,6 @@ export function Header() {
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/adely-logo.jpeg" alt="Adely Creaciones" width={48} height={48} className="rounded-full object-cover ring-1 ring-primary/20 shadow-sm" />
-          <span className="font-display font-bold text-lg text-foreground tracking-tight">Adely</span>
         </Link>
         <div className="flex items-center gap-3">
           {isAdmin && (
