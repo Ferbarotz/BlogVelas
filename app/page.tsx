@@ -7,6 +7,14 @@ export default async function HomePage() {
   const candles = await prisma.candle.findMany({
     where: { active: true },
     orderBy: { createdAt: 'desc' },
+    include: { reviews: { select: { rating: true } } },
+  });
+
+  const candlesWithRatings = candles.map((c: any) => {
+    const count = c.reviews?.length ?? 0;
+    const avg = count > 0 ? c.reviews.reduce((s: number, r: any) => s + (r.rating ?? 0), 0) / count : 0;
+    const { reviews, ...rest } = c;
+    return { ...rest, avgRating: avg, reviewCount: count };
   });
 
   const categories = ['Todas', ...new Set(candles.map((c: any) => c.category))];
@@ -34,7 +42,7 @@ export default async function HomePage() {
         </p>
       </div>
       <CatalogClient
-        candles={JSON.parse(JSON.stringify(candles))}
+        candles={JSON.parse(JSON.stringify(candlesWithRatings))}
         categories={categories}
       />
     </div>

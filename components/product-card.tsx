@@ -1,7 +1,10 @@
 'use client';
-import { Heart, ShoppingCart, Minus, Plus, Pencil } from 'lucide-react';
+import { Heart, ShoppingCart, Minus, Plus, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useCartStore } from '@/lib/cart-store';
+import { useFavoritesStore } from '@/lib/favorites-store';
+import { ProductReviewsSheet, Stars } from '@/components/product-reviews-sheet';
+import { ClientOnly } from '@/components/client-only';
 import { toast } from 'sonner';
 import Image from 'next/image';
 
@@ -12,22 +15,22 @@ interface ProductCardProps {
   price: number;
   imageUrl: string;
   category: string;
+  avgRating?: number;
+  reviewCount?: number;
 }
 
-export function ProductCard({ id, name, description, price, imageUrl, category }: ProductCardProps) {
-  const [liked, setLiked] = useState(false);
+export function ProductCard({ id, name, description, price, imageUrl, category, avgRating = 0, reviewCount = 0 }: ProductCardProps) {
   const [imgError, setImgError] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [showNote, setShowNote] = useState(false);
-  const [note, setNote] = useState('');
   const addItem = useCartStore((s) => s.addItem);
+  const favoriteIds = useFavoritesStore((s) => s.ids);
+  const toggleFavorite = useFavoritesStore((s) => s.toggle);
+  const liked = favoriteIds.includes(id);
 
   const handleAddToCart = () => {
-    addItem({ id, name, price, imageUrl: imageUrl ?? '', note: note.trim() || undefined }, quantity);
+    addItem({ id, name, price, imageUrl: imageUrl ?? '' }, quantity);
     toast.success(`${quantity} × ${name} añadido al carrito`);
     setQuantity(1);
-    setNote('');
-    setShowNote(false);
   };
 
   return (
@@ -50,20 +53,31 @@ export function ProductCard({ id, name, description, price, imageUrl, category }
         <span className="absolute top-2 left-2 bg-white/90 text-[11px] font-medium text-gray-600 px-2 py-0.5 rounded">
           {category}
         </span>
-        <button
-          onClick={() => setLiked(!liked)}
-          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center bg-white/90 rounded-full hover:bg-white transition-colors"
-          aria-label={liked ? 'Quitar de favoritos' : 'Añadir a favoritos'}
-        >
-          <Heart
-            className={`w-4 h-4 transition-colors ${
-              liked ? 'fill-red-500 text-red-500' : 'text-gray-500'
-            }`}
-          />
-        </button>
+        <ClientOnly>
+          <button
+            onClick={() => toggleFavorite(id)}
+            className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center bg-white/90 rounded-full hover:bg-white transition-colors"
+            aria-label={liked ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+          >
+            <Heart
+              className={`w-4 h-4 transition-colors ${
+                liked ? 'fill-red-500 text-red-500' : 'text-gray-500'
+              }`}
+            />
+          </button>
+        </ClientOnly>
       </div>
       <div className="p-3 flex flex-col flex-1">
         <h3 className="font-display font-semibold text-foreground text-sm tracking-tight">{name}</h3>
+
+        {/* Calificación */}
+        <div className="flex items-center gap-1.5 mt-1">
+          <Stars value={avgRating} size={13} />
+          <span className="text-[11px] text-gray-400">
+            {reviewCount > 0 ? `${avgRating.toFixed(1)} (${reviewCount})` : 'Sin opiniones'}
+          </span>
+        </div>
+
         <p className="text-xs text-gray-500 mt-1 line-clamp-2 flex-1">{description}</p>
         <span className="font-bold text-foreground text-base mt-3">${price?.toFixed?.(2) ?? '0.00'}</span>
 
@@ -85,26 +99,20 @@ export function ProductCard({ id, name, description, price, imageUrl, category }
               <Plus className="w-3 h-3" />
             </button>
           </div>
-          <button
-            onClick={() => setShowNote((s) => !s)}
-            className={`flex items-center gap-1 text-[11px] font-medium px-2 py-1.5 rounded transition-colors ${
-              showNote || note ? 'text-primary' : 'text-gray-500 hover:text-foreground'
-            }`}
-          >
-            <Pencil className="w-3 h-3" />
-            Nota
-          </button>
-        </div>
-
-        {showNote && (
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            rows={2}
-            placeholder="Aroma, color, dedicatoria..."
-            className="w-full mt-2 border border-border rounded-md px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+          <ProductReviewsSheet
+            candleId={id}
+            candleName={name}
+            trigger={
+              <button
+                className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-1.5 rounded border border-border text-gray-600 hover:text-foreground hover:border-gray-400 transition-colors"
+                aria-label="Ver opiniones"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                Ver
+              </button>
+            }
           />
-        )}
+        </div>
 
         <button
           onClick={handleAddToCart}

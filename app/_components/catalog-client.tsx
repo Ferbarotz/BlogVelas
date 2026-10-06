@@ -10,6 +10,8 @@ interface Candle {
   price: number;
   imageUrl: string | null;
   category: string;
+  avgRating?: number;
+  reviewCount?: number;
 }
 
 export function CatalogClient({ candles, categories }: { candles: Candle[]; categories: string[] }) {
@@ -73,6 +75,8 @@ export function CatalogClient({ candles, categories }: { candles: Candle[]; cate
               price={candle.price}
               imageUrl={candle.imageUrl ?? ''}
               category={candle.category}
+              avgRating={candle.avgRating ?? 0}
+              reviewCount={candle.reviewCount ?? 0}
             />
           ))}
         </div>

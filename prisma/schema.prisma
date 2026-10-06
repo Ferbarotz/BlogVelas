@@ -33,6 +33,7 @@ model Candle {
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
   orderItems       OrderItem[]
+  reviews          Review[]
 
   @@index([category])
   @@index([active])
@@ -54,6 +55,19 @@ model Order {
   items        OrderItem[]
 
   @@index([userId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      @default(5)
+  comment   String?
+  author    String?
+  userId    String?
+  candleId  String
+  candle    Candle   @relation(fields: [candleId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([candleId])
 }
 
 model OrderItem {
