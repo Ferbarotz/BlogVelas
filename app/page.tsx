@@ -25,7 +25,7 @@ export default async function HomePage() {
         />
       </div>
 
-      <div className="mb-6">
+      <div className="mb-6 text-center">
         <h2 className="font-display text-xl font-bold text-foreground tracking-tight">
           Nuestra Colección
         </h2>
