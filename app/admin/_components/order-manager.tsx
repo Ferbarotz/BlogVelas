@@ -23,6 +23,7 @@ interface OrderItem {
   quantity: number;
   price: number;
   candleName: string;
+  note?: string | null;
   candle: { name: string; imageUrl: string | null } | null;
 }
 
@@ -113,9 +114,14 @@ export function OrderManager() {
               <div className="space-y-1">
                 <p className="text-xs font-medium text-gray-600">Productos:</p>
                 {(order.items ?? []).map((item: OrderItem) => (
-                  <div key={item.id} className="flex justify-between text-xs text-gray-600">
-                    <span>{item.candle?.name ?? item.candleName ?? 'Vela'} x{item.quantity}</span>
-                    <span>${(item.price * item.quantity)?.toFixed?.(2) ?? '0.00'}</span>
+                  <div key={item.id} className="text-xs text-gray-600">
+                    <div className="flex justify-between">
+                      <span>{item.candle?.name ?? item.candleName ?? 'Vela'} x{item.quantity}</span>
+                      <span>${(item.price * item.quantity)?.toFixed?.(2) ?? '0.00'}</span>
+                    </div>
+                    {item.note ? (
+                      <p className="text-[11px] text-primary italic mt-0.5">✎ {item.note}</p>
+                    ) : null}
                   </div>
                 ))}
               </div>

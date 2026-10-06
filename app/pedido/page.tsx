@@ -47,7 +47,7 @@ function OrderForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          items: items.map((i: CartItem) => ({ candleId: i.id, quantity: i.quantity, price: i.price, candleName: i.name })),
+          items: items.map((i: CartItem) => ({ candleId: i.id, quantity: i.quantity, price: i.price, candleName: i.name, note: i.note ?? '' })),
           total,
         }),
       });

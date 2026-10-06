@@ -1,13 +1,12 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingCart, User, LogIn, LogOut } from 'lucide-react';
-import { useCartStore } from '@/lib/cart-store';
+import { User, LogIn, LogOut } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import { ClientOnly } from '@/components/client-only';
+import { CartSheet } from '@/components/cart-sheet';
 
 export function Header() {
-  const count = useCartStore((s) => s.getCount());
   const { data: session, status } = useSession() || {};
   const isAdmin = session?.user?.role === 'admin';
   const isAuthed = status === 'authenticated';
@@ -28,19 +27,7 @@ export function Header() {
               <span className="hidden sm:inline">Admin</span>
             </Link>
           )}
-          <Link
-            href="/carrito"
-            className="relative flex items-center gap-1 text-gray-600 hover:text-foreground transition-colors"
-          >
-            <ShoppingCart className="w-5 h-5" />
-            <ClientOnly fallback={<span className="text-xs font-medium">0</span>}>
-              {count > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-primary text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                  {count}
-                </span>
-              )}
-            </ClientOnly>
-          </Link>
+          <CartSheet />
           <ClientOnly>
             {isAuthed ? (
               <button

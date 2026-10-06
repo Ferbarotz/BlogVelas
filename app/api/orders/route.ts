@@ -44,6 +44,7 @@ export async function POST(req: Request) {
             quantity: item.quantity ?? 1,
             price: parseFloat(item.price) || 0,
             candleName: item.candleName ?? '',
+            note: item.note ?? '',
           })),
         },
       },

@@ -1,19 +1,34 @@
 'use client';
 import { useCartStore, CartItem } from '@/lib/cart-store';
-import { Trash2, Minus, Plus, ShoppingCart, ArrowLeft } from 'lucide-react';
+import { Trash2, Minus, Plus, ShoppingCart, ArrowLeft, Pencil } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { ClientOnly } from '@/components/client-only';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 function CartContent() {
   const items = useCartStore((s) => s.items);
   const removeItem = useCartStore((s) => s.removeItem);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
+  const updateNote = useCartStore((s) => s.updateNote);
   const clearCart = useCartStore((s) => s.clearCart);
   const getTotal = useCartStore((s) => s.getTotal);
+  const getCount = useCartStore((s) => s.getCount);
+  const [editingNote, setEditingNote] = useState<string | null>(null);
 
   const total = getTotal();
+  const count = getCount();
 
   if ((items?.length ?? 0) === 0) {
     return (
@@ -44,7 +59,32 @@ function CartContent() {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-medium text-sm text-foreground truncate">{item.name}</h3>
-              <p className="text-sm font-bold text-foreground mt-0.5">${item.price?.toFixed?.(2) ?? '0.00'}</p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-xs text-gray-500">${item.price?.toFixed?.(2) ?? '0.00'} c/u</p>
+                <span className="text-xs text-gray-300">•</span>
+                <p className="text-sm font-bold text-foreground">${((item.price ?? 0) * item.quantity).toFixed(2)}</p>
+              </div>
+
+              {editingNote === item.id ? (
+                <textarea
+                  autoFocus
+                  value={item.note ?? ''}
+                  onChange={(e) => updateNote(item.id, e.target.value)}
+                  onBlur={() => setEditingNote(null)}
+                  rows={2}
+                  placeholder="Aroma, color, dedicatoria..."
+                  className="w-full mt-1.5 border border-border rounded-md px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                />
+              ) : (
+                <button
+                  onClick={() => setEditingNote(item.id)}
+                  className="flex items-center gap-1 mt-1 text-[11px] text-gray-500 hover:text-primary transition-colors"
+                >
+                  <Pencil className="w-3 h-3" />
+                  {item.note ? <span className="italic truncate max-w-[180px]">“{item.note}”</span> : 'Añadir nota'}
+                </button>
+              )}
+
               <div className="flex items-center gap-2 mt-2">
                 <button
                   onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -72,6 +112,9 @@ function CartContent() {
       </div>
 
       <div className="mt-6 border-t border-border pt-4">
+        <div className="flex justify-between items-center text-sm text-gray-500 mb-1">
+          <span>{count} artículo(s)</span>
+        </div>
         <div className="flex justify-between items-center mb-4">
           <span className="font-medium text-foreground">Total</span>
           <span className="font-bold text-xl text-foreground">${total?.toFixed?.(2) ?? '0.00'}</span>
@@ -83,12 +126,36 @@ function CartContent() {
           >
             Hacer pedido
           </Link>
-          <button
-            onClick={clearCart}
-            className="w-full border border-gray-300 text-gray-600 text-sm font-medium py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+          <Link
+            href="/"
+            className="w-full border border-border text-foreground text-sm font-medium py-2.5 rounded-lg text-center hover:bg-gray-50 transition-colors flex items-center justify-center gap-1.5"
           >
-            Vaciar carrito
-          </button>
+            <ArrowLeft className="w-4 h-4" /> Seguir comprando
+          </Link>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button className="w-full text-gray-500 text-sm font-medium py-2 rounded-lg hover:text-red-500 transition-colors">
+                Vaciar carrito
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>¿Vaciar el carrito?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Se eliminarán todos los productos de tu carrito. Esta acción no se puede deshacer.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={clearCart}
+                  className="bg-red-500 hover:bg-red-600"
+                >
+                  Sí, vaciar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </>
