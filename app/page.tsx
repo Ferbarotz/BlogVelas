@@ -18,17 +18,11 @@ export default async function HomePage() {
         <Image
           src="/adely-logo.jpeg"
           alt="Adely Creaciones"
-          width={160}
-          height={160}
+          width={240}
+          height={240}
           priority
-          className="rounded-full object-cover ring-2 ring-primary/20 shadow-md"
+          className="rounded-full object-cover ring-2 ring-primary/20 shadow-lg"
         />
-        <h1 className="font-display text-2xl font-bold text-foreground tracking-tight mt-4">
-          Adely Creaciones
-        </h1>
-        <p className="text-sm text-primary font-medium italic mt-1">
-          Pequeños detalles, grandes emociones.
-        </p>
       </div>
 
       <div className="mb-6">
