@@ -106,7 +106,11 @@ function OrderForm() {
 
       clearCart();
       if (pay?.mock) {
-        router.push(`/pedido/confirmacion?n=${data?.orderNumber ?? ''}&sim=1`);
+        router.push(
+          `/pedido/pago?order=${encodeURIComponent(pay?.orderId ?? data?.id ?? '')}&n=${
+            data?.orderNumber ?? ''
+          }&t=${pay?.amount ?? total ?? 0}`
+        );
       } else if (pay?.checkoutUrl) {
         window.location.href = pay.checkoutUrl;
       } else {

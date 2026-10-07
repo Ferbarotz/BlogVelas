@@ -28,17 +28,23 @@ export async function POST(req: NextRequest) {
     const currency = 'COP';
     const reference = order.id;
 
-    // MODO SIMULADO: marcamos el pago como aprobado (simulado) para poder probar.
+    // MODO SIMULADO: dejamos el pedido pendiente y mostramos la pantalla de pago
+    // demo (tarjeta / PSE / transferencia). El pago se "aprueba" allí.
     if (!isWompiConfigured()) {
       await prisma.order.update({
         where: { id: order.id },
         data: {
-          paymentStatus: 'pagado (simulado)',
+          paymentStatus: 'pendiente',
           paymentProvider: 'simulado',
           paymentRef: reference,
         },
       });
-      return NextResponse.json({ mock: true, orderNumber: order.orderNumber });
+      return NextResponse.json({
+        mock: true,
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        amount: order.total ?? 0,
+      });
     }
 
     // MODO REAL: construimos la URL del checkout de Wompi con la firma de integridad.
