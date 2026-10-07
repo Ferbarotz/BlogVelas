@@ -188,7 +188,7 @@ function PerfilBody() {
             <label className="text-xs font-medium text-gray-500">Miembro desde</label>
             <div className="flex items-center gap-2 mt-1 text-sm text-foreground">
               <Calendar className="w-4 h-4 text-gray-400" />
-              <SafeDate date={profile.createdAt} options={{ dateStyle: 'long' }} />
+              <SafeDate date={profile.createdAt} locale="es-ES" options={{ dateStyle: 'long' }} />
             </div>
           </div>
         </div>
