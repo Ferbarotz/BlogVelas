@@ -1,6 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
+import { formatCOP } from '@/lib/utils';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -33,9 +34,18 @@ interface Order {
   id: string;
   orderNumber: number;
   status: string;
+  paymentStatus?: string;
   total: number;
   createdAt: string;
   items: OrderItem[];
+}
+
+function paymentBadge(ps?: string) {
+  const v = (ps ?? 'pendiente').toLowerCase();
+  if (v.startsWith('pagado')) return { label: v.includes('simulado') ? 'Pagado (demo)' : 'Pagado', cls: 'bg-green-100 text-green-800' };
+  if (v === 'rechazado' || v === 'error') return { label: 'Pago rechazado', cls: 'bg-red-100 text-red-800' };
+  if (v === 'anulado') return { label: 'Pago anulado', cls: 'bg-gray-200 text-gray-700' };
+  return { label: 'Pago pendiente', cls: 'bg-orange-100 text-orange-800' };
 }
 
 function MisPedidosContent() {
@@ -102,16 +112,21 @@ function MisPedidosContent() {
                 <SafeDate date={order.createdAt} options={{ dateStyle: 'medium' }} />
               </p>
             </div>
-            <span className={`text-[11px] font-medium px-2 py-1 rounded-full ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-700'}`}>
-              {STATUS_LABELS[order.status] ?? order.status}
-            </span>
+            <div className="flex flex-col items-end gap-1">
+              <span className={`text-[11px] font-medium px-2 py-1 rounded-full ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-700'}`}>
+                {STATUS_LABELS[order.status] ?? order.status}
+              </span>
+              <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${paymentBadge(order.paymentStatus).cls}`}>
+                {paymentBadge(order.paymentStatus).label}
+              </span>
+            </div>
           </div>
           <div className="border-t border-border pt-2 space-y-1">
             {(order.items ?? []).map((item) => (
               <div key={item.id} className="text-xs text-gray-600">
                 <div className="flex justify-between">
                   <span>{item.candle?.name ?? item.candleName ?? 'Vela'} x{item.quantity}</span>
-                  <span>${(item.price * item.quantity)?.toFixed?.(2) ?? '0.00'}</span>
+                  <span>{formatCOP(item.price * item.quantity)}</span>
                 </div>
                 {item.note ? (
                   <p className="text-[11px] text-primary italic mt-0.5">✎ {item.note}</p>
@@ -121,7 +136,7 @@ function MisPedidosContent() {
           </div>
           <div className="flex justify-between items-center border-t border-border mt-2 pt-2">
             <span className="text-sm font-medium text-foreground">Total</span>
-            <span className="text-sm font-bold text-foreground">${order.total?.toFixed?.(2) ?? '0.00'}</span>
+            <span className="text-sm font-bold text-foreground">{formatCOP(order.total)}</span>
           </div>
         </div>
       ))}

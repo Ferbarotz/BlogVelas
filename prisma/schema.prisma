@@ -48,8 +48,12 @@ model Order {
   phone        String
   address      String
   notes        String?
+  email        String?
   status       String      @default("pendiente")
   total        Float
+  paymentStatus   String   @default("pendiente")
+  paymentRef      String?
+  paymentProvider String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   userId       String?

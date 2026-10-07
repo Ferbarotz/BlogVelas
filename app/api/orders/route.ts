@@ -38,6 +38,7 @@ export async function POST(req: Request) {
         phone: body.phone,
         address: body.address,
         notes: body.notes ?? '',
+        email: body.email ?? session?.user?.email ?? null,
         userId: session?.user?.id ?? null,
         total: parseFloat(body.total) || 0,
         items: {
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ id: order.id, orderNumber: order.orderNumber });
+    return NextResponse.json({ id: order.id, orderNumber: order.orderNumber, total: order.total });
   } catch (error: any) {
     console.error('Error creating order:', error);
     return NextResponse.json({ error: 'Error al crear pedido' }, { status: 500 });

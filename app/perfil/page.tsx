@@ -202,7 +202,7 @@ function PerfilBody() {
             <p className="text-2xl font-bold text-foreground mt-2">{profile.ordersCount}</p>
             <p className="text-xs text-gray-500">Mis pedidos</p>
           </Link>
-          <Link href="/" className="bg-white border border-border rounded-xl p-4 hover:border-primary/50 transition-colors">
+          <Link href="/favoritos" className="bg-white border border-border rounded-xl p-4 hover:border-primary/50 transition-colors">
             <Heart className="w-5 h-5 text-red-500" />
             <p className="text-2xl font-bold text-foreground mt-2">{profile.favoritesCount}</p>
             <p className="text-xs text-gray-500">Favoritos</p>

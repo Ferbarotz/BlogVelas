@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { User, LogIn, LogOut, ShoppingBag, LayoutDashboard, UserCircle, ChevronDown } from 'lucide-react';
+import { User, LogIn, LogOut, ShoppingBag, LayoutDashboard, UserCircle, ChevronDown, Heart } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import { ClientOnly } from '@/components/client-only';
 import { CartSheet } from '@/components/cart-sheet';
@@ -65,11 +65,18 @@ export function Header() {
                       </Link>
                     </DropdownMenuItem>
                   ) : (
-                    <DropdownMenuItem asChild>
-                      <Link href="/mis-pedidos" className="cursor-pointer">
-                        <ShoppingBag className="w-4 h-4 mr-2" /> Mis pedidos
-                      </Link>
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href="/mis-pedidos" className="cursor-pointer">
+                          <ShoppingBag className="w-4 h-4 mr-2" /> Mis pedidos
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/favoritos" className="cursor-pointer">
+                          <Heart className="w-4 h-4 mr-2" /> Mis favoritos
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem

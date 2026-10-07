@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { formatCOP } from '@/lib/utils';
 import { ChevronDown, Phone, MapPin, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { SafeDate } from '@/components/safe-format';
@@ -18,6 +19,14 @@ const STATUS_COLORS: Record<string, string> = {
   entregado: 'bg-green-100 text-green-800',
 };
 
+function paymentBadge(ps?: string) {
+  const v = (ps ?? 'pendiente').toLowerCase();
+  if (v.startsWith('pagado')) return { label: v.includes('simulado') ? 'Pagado (demo)' : 'Pagado', cls: 'bg-green-100 text-green-800' };
+  if (v === 'rechazado' || v === 'error') return { label: 'Pago rechazado', cls: 'bg-red-100 text-red-800' };
+  if (v === 'anulado') return { label: 'Pago anulado', cls: 'bg-gray-200 text-gray-700' };
+  return { label: 'Pago pendiente', cls: 'bg-orange-100 text-orange-800' };
+}
+
 interface OrderItem {
   id: string;
   quantity: number;
@@ -35,6 +44,7 @@ interface Order {
   address: string;
   notes: string | null;
   status: string;
+  paymentStatus?: string;
   total: number;
   createdAt: string;
   items: OrderItem[];
@@ -92,9 +102,12 @@ export function OrderManager() {
               <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}>
                 {STATUS_LABELS[order.status] ?? order.status}
               </span>
+              <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${paymentBadge(order.paymentStatus).cls}`}>
+                {paymentBadge(order.paymentStatus).label}
+              </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-foreground">${order.total?.toFixed?.(2) ?? '0.00'}</span>
+              <span className="text-sm font-medium text-foreground">{formatCOP(order.total)}</span>
               <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedOrder === order.id ? 'rotate-180' : ''}`} />
             </div>
           </button>
@@ -117,7 +130,7 @@ export function OrderManager() {
                   <div key={item.id} className="text-xs text-gray-600">
                     <div className="flex justify-between">
                       <span>{item.candle?.name ?? item.candleName ?? 'Vela'} x{item.quantity}</span>
-                      <span>${(item.price * item.quantity)?.toFixed?.(2) ?? '0.00'}</span>
+                      <span>{formatCOP(item.price * item.quantity)}</span>
                     </div>
                     {item.note ? (
                       <p className="text-[11px] text-primary italic mt-0.5">✎ {item.note}</p>

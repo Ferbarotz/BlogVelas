@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { ClientOnly } from '@/components/client-only';
+import { formatCOP } from '@/lib/utils';
 
 function OrderForm() {
   const items = useCartStore((s) => s.items);
@@ -19,6 +20,7 @@ function OrderForm() {
   const [form, setForm] = useState({
     customerName: '',
     phone: '',
+    email: '',
     address: '',
     notes: '',
   });
@@ -39,6 +41,7 @@ function OrderForm() {
           ...prev,
           customerName: prev.customerName || last?.customerName || session?.user?.name || '',
           phone: prev.phone || last?.phone || '',
+          email: prev.email || last?.email || session?.user?.email || '',
           address: prev.address || last?.address || '',
         }));
       } catch {
@@ -46,6 +49,7 @@ function OrderForm() {
           setForm((prev) => ({
             ...prev,
             customerName: prev.customerName || session?.user?.name || '',
+            email: prev.email || session?.user?.email || '',
           }));
         }
       } finally {
@@ -73,7 +77,7 @@ function OrderForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.customerName?.trim() || !form.phone?.trim() || !form.address?.trim()) {
+    if (!form.customerName?.trim() || !form.phone?.trim() || !form.address?.trim() || !form.email?.trim()) {
       toast.error('Completa todos los campos obligatorios');
       return;
     }
@@ -90,11 +94,26 @@ function OrderForm() {
       });
       if (!res.ok) throw new Error('Error al crear pedido');
       const data = await res.json();
+
+      // Iniciar el pago (Wompi o modo simulado)
+      const payRes = await fetch('/api/payments/wompi/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: data?.id }),
+      });
+      if (!payRes.ok) throw new Error('Error al iniciar el pago');
+      const pay = await payRes.json();
+
       clearCart();
-      router.push(`/pedido/confirmacion?n=${data?.orderNumber ?? ''}`);
+      if (pay?.mock) {
+        router.push(`/pedido/confirmacion?n=${data?.orderNumber ?? ''}&sim=1`);
+      } else if (pay?.checkoutUrl) {
+        window.location.href = pay.checkoutUrl;
+      } else {
+        router.push(`/pedido/confirmacion?n=${data?.orderNumber ?? ''}`);
+      }
     } catch (err: any) {
       toast.error('Error al procesar tu pedido. Inténtalo de nuevo.');
-    } finally {
       setLoading(false);
     }
   };
@@ -103,7 +122,7 @@ function OrderForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="bg-gray-50 rounded-lg p-4 mb-4">
         <p className="text-xs text-gray-500 mb-2">{items?.length ?? 0} producto(s)</p>
-        <p className="font-bold text-lg text-foreground">Total: ${total?.toFixed?.(2) ?? '0.00'}</p>
+        <p className="font-bold text-lg text-foreground">Total: {formatCOP(total ?? 0)}</p>
       </div>
 
       {prefilling ? (
@@ -137,6 +156,17 @@ function OrderForm() {
         />
       </div>
       <div>
+        <label className="block text-sm font-medium text-foreground mb-1">Correo electrónico *</label>
+        <input
+          type="email"
+          required
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          className="w-full border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+          placeholder="tucorreo@ejemplo.com"
+        />
+      </div>
+      <div>
         <label className="block text-sm font-medium text-foreground mb-1">Dirección de entrega *</label>
         <textarea
           required
@@ -165,7 +195,7 @@ function OrderForm() {
         {loading ? (
           <><Loader2 className="w-4 h-4 animate-spin" /> Procesando...</>
         ) : (
-          'Confirmar Pedido'
+          'Continuar al pago'
         )}
       </button>
     </form>
